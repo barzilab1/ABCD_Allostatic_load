@@ -3,7 +3,7 @@ source("config.R")
 source("utility_fun.R")
 
 
-anthropometrics = load_instrument("abcd_ant01",abcd_files_path)
+anthropometrics = load_instrument("abcd_ant01", abcd_files_path)
 
 anthropometrics = anthropometrics[,grepl("src|inter|sex|event|calc|cm|weight[1-3]", colnames(anthropometrics))] 
 
@@ -14,7 +14,7 @@ cdc_percentiles <- read_csv(paste0(additional_files_path, "bmiagerev.csv"))
 
 #according to cdc, add 0.5 to the age https://www.cdc.gov/nccdphp/dnpao/growthcharts/resources/sas.htm
 anthropometrics$bmi_age_months = anthropometrics$interview_age + 0.5
-anthropometrics$sex_bmi = ifelse(anthropometrics$sex == "F",2,1)
+anthropometrics$sex_bmi = ifelse(anthropometrics$sex == "F", 2, 1)
 
 
 #in release 4.0, the total weight is missing 
@@ -30,7 +30,7 @@ BMI_dataset = merge(anthropometrics, cdc_percentiles, by.x = c("sex_bmi", "bmi_a
 
 
 #calculate BMI
-BMI_dataset$BMI = round( BMI_dataset$anthroweightcalc / (BMI_dataset$anthroheightcalc)^2 * 703 , digits = 1)
+BMI_dataset$BMI = round(BMI_dataset$anthroweightcalc / (BMI_dataset$anthroheightcalc)^2 * 703 , digits = 1)
 
 ### Body-Mass index, remove outlier >36 or < 11 based on the recommendation from Rebecca Umbach, PhD. (ABCD official)
 BMI_dataset$BMI[which(BMI_dataset$BMI>36 | BMI_dataset$BMI < 11)] = NA; 
@@ -57,11 +57,13 @@ BMI_dataset$bmi_above_85p = (as.numeric(BMI_dataset$bmi_percentiles) >= 85)*1
 # BMI_dataset$bz = (((BMI_dataset$BMI / BMI_dataset$M) ^ BMI_dataset$L) - 1) / (BMI_dataset$L * BMI_dataset$S)
 # BMI_dataset$exact_percentile = round(100 * pnorm(BMI_dataset$bz),2)
 
+# Use data at 2-year FU
+BMI_dataset = BMI_dataset[BMI_dataset$eventname == "2_year_follow_up_y_arm_1",]
 
-write.csv(file = "outputs/ABCD_BMI.csv",x = BMI_dataset[,c("src_subject_id","interview_date","interview_age","sex","eventname",
-                                                                          "anthroweightcalc", "anthroheightcalc", "anthro_waist_cm",
-                                                                          "BMI","bmi_above_85p","bmi_above_95p", "bmi_percentiles")],
-                                                      row.names=F, na = "")
+write.csv(file = "data/ABCD_BMI.csv", x = BMI_dataset[, c("src_subject_id", "interview_date", "interview_age", "eventname", "sex",
+                                                        "anthroweightcalc", "anthroheightcalc", "anthro_waist_cm",
+                                                        "BMI","bmi_above_85p","bmi_above_95p", "bmi_percentiles")],
+          row.names=F, na = "")
 
 
 

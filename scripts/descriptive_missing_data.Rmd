@@ -1,0 +1,78 @@
+---
+title: "Untitled"
+author: "Kate Tran"
+date: "2023-09-13"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r}
+library(dplyr)
+library(naniar)
+library(readr)
+```
+
+```{r}
+dataset_main <- read_csv("../outputs/dataset_main_analysis_2y.csv")
+dataset_2y <- read_csv("../outputs/dataset_2y.csv")
+```
+
+```{r}
+vars <- dataset_main %>% 
+  select(
+    # demographics
+    # age_years, sex_br, matches("race|_hisp$"),
+    # AL components
+    biospec_blood_cholesterol, biospec_blood_hdl_cholesterol, blood_pressure_sys_mean, blood_pressure_dia_mean,
+    anthro_waist_cm, bmi_percentiles, hormone_scr_dhea_mean, biospec_blood_hemoglobin_a1,
+    
+    exposome_score_1y, allostatic_load, 
+    bpm_y_scr_totalprob_t, cbcl_scr_syn_totprob_t
+    
+    # T2D_fromEUR_PRS, 
+    # BMI_PRS, 
+    # MDD_PRS,
+    # PTSD_fromEUR_PRS,
+    # T2D_fromAFR_PRS,
+    # MVP_MDD_PRS,
+    # PTSD_fromAFR_PRS
+    ) %>% names()
+
+# Missing data in the main data
+missing_main <- dataset_main %>% select(all_of(vars)) %>% 
+  miss_var_summary() %>% 
+  mutate(pct_miss = round(pct_miss, 2)) %>%
+  mutate(missing_main = paste0(n_miss, " (", pct_miss, "%)")) %>% 
+  select(-n_miss, -pct_miss)
+
+missing_whole <- dataset_2y %>% select(all_of(vars)) %>% 
+  miss_var_summary() %>% 
+  mutate(pct_miss = round(pct_miss, 2)) %>%
+  mutate(missing_whole = paste0(n_miss, " (", pct_miss, "%)")) %>% 
+  select(-n_miss, -pct_miss)
+  
+tableS1 <- missing_main %>% left_join(missing_whole)
+write.csv(tableS1, "../outputs_paper/table_S1.csv")
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
