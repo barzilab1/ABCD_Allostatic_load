@@ -64,7 +64,7 @@ dataset <- dataset %>% filter(!src_subject_id %in% IDs_error)
 
 # Filter data for main analysis - include kids that have at least 1 biological indicator of allostatic load in the 2-year data timepoint (HGBA1c, Cholesterol or HDL, or DHEA)
 ```{r}
-dataset_main_test <- dataset %>% 
+dataset_main <- dataset %>% 
 filter(if_any(c(biospec_blood_hemoglobin_a1, biospec_blood_cholesterol, biospec_blood_hdl_cholesterol, hormone_scr_dhea_mean), ~ !is.na(.)))
 ```
 

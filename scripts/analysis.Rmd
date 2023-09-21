@@ -37,10 +37,9 @@ dataset_main <- read_csv("../outputs/dataset_main_analysis_2y.csv")
 main_mod_1_whole <- get_model(data = dataset_main, outcome = "allostatic_load", predictor = "exposome_score_1y", covariates = NULL)
 main_mod_2_whole <- get_model(data = dataset_main, outcome = "allostatic_load", predictor = "exposome_score_1y")
 
-tab_model(main_mod_1_whole, main_mod_2_whole, digits.rsq = 4, show.intercept = F)
 tab_model(main_mod_1_whole, main_mod_2_whole,
           show.intercept = F, digits.rsq = 4, transform = NULL, auto.label = FALSE, collapse.ci = FALSE, 
-          file = "../results_paper/tableS3_exposome_AL_091123_WHOLE.xls")
+          file = "../results_paper/tableS3_exposome_AL_091423_WHOLE.xls")
 ```
 
 ## Supplement table S4
@@ -79,23 +78,73 @@ main_mod_5_ptsd_eur <- get_model(data = data_eur, outcome = "allostatic_load",
 ### Supplement table S4 - top
 tab_model(main_mod_1_eur, main_mod_2_eur, main_mod_3_t2d_eur, main_mod_4_t2d_eur, main_mod_5_t2d_eur, 
           show.intercept = F, digits.rsq = 4, transform = NULL, auto.label = FALSE, collapse.ci = FALSE,  
-          file = "../results_paper/tableS4.1_GxE_AL_091123_EUR_T2D.xls")
+          file = "../results_paper/tableS4.1_GxE_AL_091423_EUR_T2D.xls")
 
 ### Supplement table S4 - bottom
-tab_model(main_mod_1_eur, main_mod_2_eur, main_mod_3_mdd_eur, main_mod_4_mdd_eur, main_mod_5_mdd_eur, show.intercept = F) 
 tab_model(main_mod_1_eur, main_mod_2_eur, main_mod_3_mdd_eur, main_mod_4_mdd_eur, main_mod_5_mdd_eur, 
           show.intercept = F, digits.rsq = 4, transform = NULL, auto.label = FALSE, collapse.ci = FALSE, 
-          file = "../results_paper/tableS4.2_GxE_AL_091123_EUR_MDD.xls")
+          file = "../results_paper/tableS4.2_GxE_AL_091423_EUR_MDD.xls")
+
+
+### Supplement table S13? - top
+tab_model(main_mod_1_eur, main_mod_2_eur, main_mod_3_bmi_eur, main_mod_4_bmi_eur, main_mod_5_bmi_eur, 
+          show.intercept = F, digits.rsq = 4, transform = NULL, auto.label = FALSE, collapse.ci = FALSE,  
+          file = "../results_paper/tableS13.1_GxE_AL_091823_EUR_BMI.xls")
+
+### Supplement table S13? - bottom
+tab_model(main_mod_1_eur, main_mod_2_eur, main_mod_3_ptsd_eur, main_mod_4_ptsd_eur, main_mod_5_ptsd_eur, 
+          show.intercept = F, digits.rsq = 4, transform = NULL, auto.label = FALSE, collapse.ci = FALSE, 
+          file = "../results_paper/tableS13.2_GxE_AL_091823_EUR_PTSD.xls")
+
+
+
+# Compare the models
+## TOP
+main_mod_3_t2d_eur_2 <- get_model(data = data_eur %>% filter(!is.na(T2D_fromEUR_PRS) & !is.na(exposome_score_1y)), outcome = "allostatic_load", predictor = "T2D_fromEUR_PRS", covariates = covar_prs)
+
+main_mod_4_t2d_eur_2 <- get_model(data = data_eur %>% filter(!is.na(T2D_fromEUR_PRS) & !is.na(exposome_score_1y)), outcome = "allostatic_load", 
+                                predictor = c("exposome_score_1y", "T2D_fromEUR_PRS"), covariates = covar_prs)
+
+main_mod_5_t2d_eur_2 <- get_model(data = data_eur %>% filter(!is.na(T2D_fromEUR_PRS) & !is.na(exposome_score_1y)), outcome = "allostatic_load", 
+                                predictor = "exposome_score_1y*T2D_fromEUR_PRS", covariates = covar_prs)
+
+anova(main_mod_3_t2d_eur, main_mod_1_eur, test="Chisq")
+anova(main_mod_3_t2d_eur_2, main_mod_2_eur, test="Chisq")
+anova(main_mod_4_t2d_eur_2, main_mod_2_eur, test="Chisq")
+anova(main_mod_4_t2d_eur_2, main_mod_3_t2d_eur_2, test="Chisq")
+anova(main_mod_5_t2d_eur, main_mod_4_t2d_eur, test="Chisq")
+anova(main_mod_5_t2d_eur_2, main_mod_3_t2d_eur_2, test="Chisq")
+### adj p
+round(p.adjust(c(7.831e-10, 0, 7.576e-08, 2.2e-16, 0.02105, 2.2e-16), method = "fdr"), 3) #0.000 0.000 0.000 0.000 0.021 0.000
+
+
+## BOTTOM
+main_mod_3_mdd_eur_2 <- get_model(data = data_eur %>% filter(!is.na(MDD_PRS) & !is.na(exposome_score_1y)), outcome = "allostatic_load", predictor = "MDD_PRS", covariates = covar_prs)
+
+main_mod_4_mdd_eur_2 <- get_model(data = data_eur %>% filter(!is.na(MDD_PRS) & !is.na(exposome_score_1y)), outcome = "allostatic_load", 
+                                predictor = c("exposome_score_1y", "MDD_PRS"), covariates = covar_prs)
+
+main_mod_5_mdd_eur_2 <- get_model(data = data_eur %>% filter(!is.na(MDD_PRS) & !is.na(exposome_score_1y)), outcome = "allostatic_load", 
+                                predictor = "exposome_score_1y*MDD_PRS", covariates = covar_prs)
+
+anova(main_mod_3_mdd_eur, main_mod_1_eur, test="Chisq")
+anova(main_mod_3_mdd_eur_2, main_mod_2_eur, test="Chisq")
+anova(main_mod_4_mdd_eur_2, main_mod_2_eur, test="Chisq")
+anova(main_mod_4_mdd_eur_2, main_mod_3_mdd_eur_2, test="Chisq")
+anova(main_mod_5_mdd_eur, main_mod_4_mdd_eur, test="Chisq")
+anova(main_mod_5_mdd_eur_2, main_mod_3_mdd_eur_2, test="Chisq")
+### adj p
+round(p.adjust(c(0.003181, 0, 0.05292, 2.2e-16, 0.0447, 2.2e-16), method = "fdr"), 3) # 0.005 0.000 0.053 0.000 0.053 0.000
 
 # 
 # tab_model(main_mod_1_eur, main_mod_2_eur, main_mod_3_bmi_eur, main_mod_4_bmi_eur, main_mod_5_bmi_eur, 
 #           show.intercept = F, digits.rsq = 4, transform = NULL, auto.label = FALSE, collapse.ci = FALSE, 
-#           file = "../results_paper/main_table1_GxE_AL_091123_EUR_BMI.xls")
+#           file = "../results_paper/main_table1_GxE_AL_091423_EUR_BMI.xls")
 # 
 # 
 # tab_model(main_mod_1_eur, main_mod_2_eur, main_mod_3_ptsd_eur, main_mod_4_ptsd_eur, main_mod_5_ptsd_eur, 
 #           show.intercept = F, digits.rsq = 4, transform = NULL, auto.label = FALSE, collapse.ci = FALSE, 
-#           file = "../results_paper/main_table1_GxE_AL_091123_EUR_PTSD.xls")
+#           file = "../results_paper/main_table1_GxE_AL_091423_EUR_PTSD.xls")
 ```
 
 ## Supplement table S5
@@ -128,16 +177,16 @@ main_mod_5_ptsd_afr <- get_model(data = data_afr, outcome = "allostatic_load",
 ### Supplement table S5 - top
 tab_model(main_mod_1_afr, main_mod_2_afr, main_mod_3_t2d_afr, main_mod_4_t2d_afr, main_mod_5_t2d_afr,
           show.intercept = F, digits.rsq = 4, transform = NULL, auto.label = FALSE, collapse.ci = FALSE,
-          file = "../results_paper/tableS5.1_GxE_AL_091123_AFR_T2D.xls")
+          file = "../results_paper/tableS5.1_GxE_AL_091423_AFR_T2D.xls")
 
 ### Supplement table S5 - bottom
 tab_model(main_mod_1_afr, main_mod_2_afr, main_mod_3_mdd_afr, main_mod_4_mdd_afr, main_mod_5_mdd_afr,
           show.intercept = F, digits.rsq = 4, transform = NULL, auto.label = FALSE, collapse.ci = FALSE, 
-          file = "../results_paper/tableS5.2_GxE_AL_091123_AFR_MDD.xls")
+          file = "../results_paper/tableS5.2_GxE_AL_091423_AFR_MDD.xls")
 
 # tab_model(main_mod_1_afr, main_mod_2_afr, main_mod_3_ptsd_afr, main_mod_4_ptsd_afr, main_mod_5_ptsd_afr, 
 #           show.intercept = F, digits.rsq = 4, transform = NULL, auto.label = FALSE, collapse.ci = FALSE, 
-#           file = "../results_paper/main_table1_GxE_AL_091123_AFR_PTSD.xls")
+#           file = "../results_paper/main_table1_GxE_AL_091423_AFR_PTSD.xls")
 
 ## no PRS of AFR for BMI
 ```
@@ -153,7 +202,7 @@ main_mod_2_total_BPM <- get_model(data = dataset_main, outcome = "bpm_y_scr_tota
 
 tab_model(main_mod_1_total_BPM, main_mod_2_total_BPM,
           show.intercept = F, digits.rsq = 4, transform = NULL, auto.label = FALSE, collapse.ci = FALSE, 
-          file = "../results_paper/tableS6.1_AL_BPM_091123_WHOLE.xls")
+          file = "../results_paper/tableS6.1_AL_BPM_091423_WHOLE.xls")
 
 
 # Supplement table S6 - bottom
@@ -164,7 +213,7 @@ main_mod_2_total_CBCL <- get_model(data = dataset_main, outcome = "cbcl_scr_syn_
 
 tab_model(main_mod_1_total_CBCL, main_mod_2_total_CBCL,
           show.intercept = F, digits.rsq = 4, transform = NULL, auto.label = FALSE, collapse.ci = FALSE, 
-          file = "../results_paper/tableS6.2_AL_CBCL_091123_WHOLE.xls")
+          file = "../results_paper/tableS6.2_AL_CBCL_091423_WHOLE.xls")
 
 ## bpm_y_scr_internal_t
 # main_mod_1_int_BPM <- get_model(data = dataset_main, outcome = "bpm_y_scr_internal_t")
@@ -173,7 +222,7 @@ tab_model(main_mod_1_total_CBCL, main_mod_2_total_CBCL,
 # 
 # tab_model(main_mod_1_int_BPM, main_mod_2_int_BPM, main_mod_3_int_BPM,
 #           show.intercept = F, digits.rsq = 4, transform = NULL, auto.label = FALSE, collapse.ci = FALSE, 
-#           file = "../results_paper/main_table2_AL_intBPM_091123_WHOLE.xls")
+#           file = "../results_paper/main_table2_AL_intBPM_091423_WHOLE.xls")
 
 ## cbcl_scr_syn_external_t
 # main_mod_1_ext_CBCL <- get_model(data = dataset_main, outcome = "cbcl_scr_syn_external_t")
@@ -182,7 +231,7 @@ tab_model(main_mod_1_total_CBCL, main_mod_2_total_CBCL,
 # 
 # tab_model(main_mod_1_ext_CBCL, main_mod_2_ext_CBCL, main_mod_3_ext_CBCL,
 #           show.intercept = F, digits.rsq = 4, transform = NULL, auto.label = FALSE, collapse.ci = FALSE, 
-#           file = "../results_paper/main_table2_AL_extCBCL_091123_WHOLE.xls")
+#           file = "../results_paper/main_table2_AL_extCBCL_091423_WHOLE.xls")
 ```
 
 
@@ -193,7 +242,7 @@ main_mod_2_Zraw_BPM <- get_model(data = dataset_main, outcome = "scale(bpm_y_scr
 
 tab_model(main_mod_1_Zraw_BPM, main_mod_2_Zraw_BPM,
           show.intercept = F, digits.rsq = 4, transform = NULL, auto.label = FALSE, collapse.ci = FALSE, 
-          file = "../results_paper/tableS6.1_AL_BPM_091123_WHOLE_Zscore_rawBPM.xls")
+          file = "../results_paper/tableS6.1_AL_BPM_091423_WHOLE_Zscore_rawBPM.xls")
 
 
 main_mod_1_Zraw_CBCL <- get_model(data = dataset_main, outcome = "scale(cbcl_scr_syn_totprob_r)", predictor = "allostatic_load", covariates = NULL)
@@ -201,10 +250,10 @@ main_mod_2_Zraw_CBCL <- get_model(data = dataset_main, outcome = "scale(cbcl_scr
 
 tab_model(main_mod_1_Zraw_CBCL, main_mod_2_Zraw_CBCL,
           show.intercept = F, digits.rsq = 4, transform = NULL, auto.label = FALSE, collapse.ci = FALSE, 
-          file = "../results_paper/tableS6.2_AL_CBCL_091123_WHOLE_Zscore_rawCBCL.xls")
+          file = "../results_paper/tableS6.2_AL_CBCL_091423_WHOLE_Zscore_rawCBCL.xls")
 ```
 
-## Supplement table S10
+## Supplement table S10-S11
 ```{r}
 # Models on the datasest where is no missing data on the measures we included in the AL measurement model (N = 284)
 dataset_2y <- read_csv("../outputs/dataset_2y.csv")
@@ -225,16 +274,23 @@ dataset_2y_sens2 <- dataset_2y %>% filter(if_any(all_of(AL_components), ~ !is.na
 #   table(., useNA = "ifany")
 
 
-# Rerun supplement table S3 on dataset_2y_sens1
-tab_model(get_model(data = dataset_2y_sens1, outcome = "allostatic_load", predictor = "exposome_score_1y"), show.intercept = F, digits.rsq = 4, transform = NULL, auto.label = FALSE, collapse.ci = FALSE, file = "../results_paper/tableS10_exposome_AL_091123_nonNA.xls")
+# S10 - Rerun supplement table S3 on dataset_2y_sens1
 
-# Rerun supplement table S3 on dataset_2y_sens2
-tab_model(get_model(data = dataset_2y_sens2, outcome = "allostatic_load", predictor = "exposome_score_1y"), show.intercept = F, digits.rsq = 4, transform = NULL, auto.label = FALSE, collapse.ci = FALSE, file = "../results_paper/tableS11_exposome_AL_091123_atleast1.xls")
+sens_mod_10.1 <- get_model(data = dataset_2y_sens1, outcome = "allostatic_load", predictor = "exposome_score_1y", covariates = NULL)
+sens_mod_10.2 <- get_model(data = dataset_2y_sens1, outcome = "allostatic_load", predictor = "exposome_score_1y")
+
+tab_model(sens_mod_10.1, sens_mod_10.2,
+          show.intercept = F, digits.rsq = 4, transform = NULL, auto.label = FALSE, collapse.ci = FALSE, 
+          file = "../results_paper/tableS10_exposome_AL_091423_nonNA.xls")
+
+# S11 - Rerun supplement table S3 on dataset_2y_sens2
+sens_mod_11.1 <- get_model(data = dataset_2y_sens2, outcome = "allostatic_load", predictor = "exposome_score_1y", covariates = NULL)
+sens_mod_11.2 <- get_model(data = dataset_2y_sens2, outcome = "allostatic_load", predictor = "exposome_score_1y")
+
+tab_model(sens_mod_11.1, sens_mod_11.2,
+          show.intercept = F, digits.rsq = 4, transform = NULL, auto.label = FALSE, collapse.ci = FALSE, 
+          file = "../results_paper/tableS11_exposome_AL_091423_atleast1.xls")
 ```
-
-
-
-
 
 
 

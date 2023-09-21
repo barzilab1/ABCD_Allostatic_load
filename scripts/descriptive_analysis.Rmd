@@ -69,9 +69,9 @@ cor_vars_PRS_EUR <- dataset_main %>%
   filter(genetic_afr == 0) %>% 
   select(
     `Diabetes PRS` = T2D_fromEUR_PRS,
+    `BMI PRS` = BMI_PRS,
     `Major Depressive Disorder PRS` = MDD_PRS,
-    `PTSD PRS` = PTSD_fromEUR_PRS,
-    `BMI PRS` = BMI_PRS
+    `PTSD PRS` = PTSD_fromEUR_PRS
   )
 plot_cor(cor_vars_PRS_EUR, pch.cex = 0.4, tl.cex = 0.4, cl.cex = 0.4, cl.ratio = 0.3)
 
@@ -102,7 +102,10 @@ write.csv(print(
     factorVars = vars_factor,
     includeNA = T,
     addOverall = T
-  )), "../outputs_paper/table1_091123.csv")
+  ),
+  catDigits = 2,
+  conDigits = 2), 
+  "../outputs_paper/table1_091423.csv")
 ```
 
 ```{r}
@@ -189,6 +192,10 @@ tab_model(lmer(allostatic_load ~ ethnicity_hisp*exposome_score_1y +
 ## BY SEX (B1)
 ### Get p-value
 wilcox.test(allostatic_load ~ sex_br, dataset_main %>% filter(!is.na(sex)))$p.value #0.002475252
+
+dataset_main %>% group_by(sex_br) %>% summarise(median = median(allostatic_load))
+rcompanion::wilcoxonRG(x = as.numeric(dataset_main$allostatic_load), g = as.factor(dataset_main$sex_br), verbose=TRUE)
+
 ggbetweenstats(
   data = dataset_main %>% filter(!is.na(sex_br)),
   x = sex_br,
@@ -217,11 +224,13 @@ ggbetweenstats(
 
 ggsave(filename = "../plots/AL_by_sex_boxplot.png", dpi = 620)
 
-## BY RACE (B2)
-# anno_B2 <- FSA::dunnTest(allostatic_load ~ race,
-#                       data = dataset_main,
-#                       method = "holm")$res
 
+
+dataset_main %>% group_by(race) %>% summarise(median = median(allostatic_load))
+FSA::dunnTest(allostatic_load ~ race,
+              data = dataset_main %>% 
+                mutate(allostatic_load = as.numeric(allostatic_load)),
+              method = "holm")$res
 
 ggbetweenstats(
   data = dataset_main %>% filter(!is.na(race)),

@@ -34,7 +34,16 @@ data_eur <- data_main %>% filter(genetic_afr == 0)
 data_afr <- data_main %>% filter(genetic_afr == 1)
 covar_whole <- c("scale(age_years)", "scale(age_years)^2", "scale(age_years)^3", "sex_br",
                  "race_black", "race_white", "ethnicity_hisp", "household_income", "parents_avg_edu")
+```
 
+```{r}
+# Extract data Eur for Tyler
+data_eur_Tyler <- data_eur %>% 
+  select(src_subject_id, eventname, age_years, sex_br, allostatic_load, bpm_y_scr_totalprob_t, T2D_fromEUR_PRS)
+
+run_mediation(IV = "T2D_fromEUR_PRS", DV = "bpm_y_scr_totalprob_t", Mediator = "allostatic_load", data = data_eur_Tyler)
+
+write.csv(data_eur_Tyler, "../outputs/data_eur_Tyler.csv")
 ```
 
 # Figure 5 - Supplement table S7 - S8
@@ -48,16 +57,6 @@ mod_exp_AL_bpm <- run_mediation(IV = "exposome_score_1y", DV = "bpm_y_scr_totalp
 mod_exp_AL_bpm$results %>% htmlTable::htmlTable()
 mod_exp_AL_bpm$summary
 
-# EUR
-# mod_exp_AL_bpm_eur <- run_mediation(IV = "exposome_score_1y", DV = "bpm_y_scr_totalprob_t", Mediator = "allostatic_load", data = data_eur)
-# mod_exp_AL_bpm_eur$results %>% htmlTable::htmlTable()
-# mod_exp_AL_bpm_eur$summary
-
-# AFR
-# mod_exp_AL_bpm_afr <- run_mediation(IV = "exposome_score_1y", DV = "bpm_y_scr_totalprob_t", Mediator = "allostatic_load", data = data_afr)
-# mod_exp_AL_bpm_afr$results %>% htmlTable::htmlTable()
-# mod_exp_AL_bpm_afr$summary
-
 # Z score of raw BPM
 mod_exp_AL_Zbpm <- run_mediation(IV = "exposome_score_1y", DV = "Z_raw_total_BPM", Mediator = "allostatic_load", data = data_main, covariates = covar_whole)
 mod_exp_AL_Zbpm$results %>% htmlTable::htmlTable()
@@ -70,18 +69,6 @@ mod_exp_AL_cbcl <- run_mediation(IV = "exposome_score_1y", DV = "cbcl_scr_syn_to
 mod_exp_AL_cbcl$results %>% htmlTable::htmlTable()
 mod_exp_AL_cbcl$summary
 
-# EUR
-# mod_exp_AL_cbcl_eur <- run_mediation(IV = "exposome_score_1y", DV = "cbcl_scr_syn_totprob_t", Mediator = "allostatic_load", data = data_eur)
-# mod_exp_AL_cbcl_eur$results %>% htmlTable::htmlTable()
-# mod_exp_AL_cbcl_eur$summary
-
-# AFR
-# mod_exp_AL_cbcl_afr <- run_mediation(IV = "exposome_score_1y", DV = "cbcl_scr_syn_totprob_t", Mediator = "allostatic_load", data = data_afr)
-# mod_exp_AL_cbcl_afr$results %>% htmlTable::htmlTable()
-# mod_exp_AL_cbcl_afr$summary
-
-
-
 # Z score of raw CBCL
 mod_exp_AL_Zcbcl <- run_mediation(IV = "exposome_score_1y", DV = "Z_raw_total_CBCL", Mediator = "allostatic_load", data = data_main, covariates = covar_whole)
 mod_exp_AL_Zcbcl$results %>% htmlTable::htmlTable()
@@ -93,6 +80,8 @@ mod_exp_AL_Zcbcl$results %>% htmlTable::htmlTable()
 mod_t2dPRS_AL_bpm_eur <- run_mediation(IV = "T2D_fromEUR_PRS", DV = "bpm_y_scr_totalprob_t", Mediator = "allostatic_load", data = data_eur)
 mod_t2dPRS_AL_bpm_eur$results %>% htmlTable::htmlTable()
 mod_t2dPRS_AL_bpm_eur$summary
+
+### Run the model 
 
 # Z score of raw BPM
 mod_t2dPRS_AL_Zbpm_eur <- run_mediation(IV = "T2D_fromEUR_PRS", DV = "Z_raw_total_BPM", Mediator = "allostatic_load", data = data_eur)
@@ -138,7 +127,6 @@ mod_mddPRS_AL_Zcbcl_eur$results %>% htmlTable::htmlTable()
 # Supplement table S9
 ## Supplement table S9.1: Diabetes PRS >> AL >> BPM total T scores
 ```{r}
-# Supplement table S8-1 # AFR
 mod_t2dPRS_AL_bpm_afr <- run_mediation(IV = "T2D_fromAFR_PRS", DV = "bpm_y_scr_totalprob_t", Mediator = "allostatic_load", data = data_afr)
 mod_t2dPRS_AL_bpm_afr$results %>% htmlTable::htmlTable()
 mod_t2dPRS_AL_bpm_afr$summary
@@ -150,7 +138,6 @@ mod_t2dPRS_AL_Zbpm_afr$results %>% htmlTable::htmlTable()
 
 ## Supplement table S9.2: Diabetes PRS >> AL >> CBCL total T scores
 ```{r}
-# Supplement table S8-2 # AFR
 mod_t2dPRS_AL_cbcl_afr <- run_mediation(IV = "T2D_fromAFR_PRS", DV = "cbcl_scr_syn_totprob_t", Mediator = "allostatic_load", data = data_afr)
 mod_t2dPRS_AL_cbcl_afr$results %>% htmlTable::htmlTable()
 mod_t2dPRS_AL_cbcl_afr$summary
@@ -162,7 +149,6 @@ mod_t2dPRS_AL_Zcbcl_afr$results %>% htmlTable::htmlTable()
 
 ## Supplement table S9.3: MDD PRS >> AL >> BPM total T scores
 ```{r}
-# Supplement table S8-3 # AFR
 mod_mddPRS_AL_bpm_afr <- run_mediation(IV = "MVP_MDD_PRS", DV = "bpm_y_scr_totalprob_t", Mediator = "allostatic_load", data = data_afr)
 mod_mddPRS_AL_bpm_afr$results %>% htmlTable::htmlTable()
 mod_mddPRS_AL_bpm_afr$summary
@@ -174,7 +160,6 @@ mod_mddPRS_AL_Zbpm_afr$results %>% htmlTable::htmlTable()
 
 ## Supplement table S9.4: MDD PRS >> AL >> CBCL total T scores
 ```{r}
-# Supplement table S8-4 # AFR
 mod_mddPRS_AL_cbcl_afr <- run_mediation(IV = "MVP_MDD_PRS", DV = "cbcl_scr_syn_totprob_t", Mediator = "allostatic_load", data = data_afr)
 mod_mddPRS_AL_cbcl_afr$results %>% htmlTable::htmlTable()
 mod_mddPRS_AL_cbcl_afr$summary

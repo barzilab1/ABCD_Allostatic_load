@@ -105,14 +105,6 @@ run_mediation <- function(IV, DV, Mediator, data, covariates = c("scale(age_year
   return(list(results = results,  summary = summary))
 }
 
-# run mixed models
-# get_formula <- function(outcome, predictor, random_eff, var_added = NULL) {
-#     if (is.null(var_added)) {
-#         reformulate(c(predictor, random_eff), response = outcome)
-#     } else {
-#         reformulate(c(predictor, var_added, random_eff), response = outcome)
-#     }
-# }
 
 # run mixed models
 covar_mixed_mod <- c("scale(age_years)", "scale(age_years)^2", "scale(age_years)^3",
