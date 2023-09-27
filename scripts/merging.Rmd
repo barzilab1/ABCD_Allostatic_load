@@ -68,8 +68,6 @@ dataset_main <- dataset %>%
 filter(if_any(c(biospec_blood_hemoglobin_a1, biospec_blood_cholesterol, biospec_blood_hdl_cholesterol, hormone_scr_dhea_mean), ~ !is.na(.)))
 ```
 
-
-
 ```{r}
 write.csv("../outputs/dataset_2y.csv", x = dataset, row.names = F, na = "")
 write.csv("../outputs/dataset_main_analysis_2y.csv", x = dataset_main, row.names = F, na = "")
