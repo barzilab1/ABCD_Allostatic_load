@@ -66,6 +66,10 @@ dataset <- dataset %>% filter(!src_subject_id %in% IDs_error)
 ```{r}
 dataset_main <- dataset %>% 
 filter(if_any(c(biospec_blood_hemoglobin_a1, biospec_blood_cholesterol, biospec_blood_hdl_cholesterol, hormone_scr_dhea_mean), ~ !is.na(.)))
+
+dataset %>% 
+filter(if_all(c(biospec_blood_hemoglobin_a1, biospec_blood_cholesterol, biospec_blood_hdl_cholesterol, hormone_scr_dhea_mean), ~ !is.na(.))) %>% 
+  dim()
 ```
 
 ```{r}
