@@ -10,11 +10,6 @@ knitr::opts_chunk$set(echo = TRUE)
 ```
 
 ```{r}
-# In the sensitivity analyses we will include all kids using their imputed AL scores that I expect will give similar results. 
-# All models covary for household income and parent education as they're not included in the exposome
-```
-
-```{r}
 library(dplyr)
 library(readr)
 library(lme4)
@@ -23,8 +18,6 @@ source("../utility_fun.R")
 ```
 
 ```{r}
-# dataset <- read_csv("../outputs/dataset_2y.csv")
-
 # Filter data for main analysis - include kids that have at least 1 biological indicator of allostatic load in the 2-year data timepoint (HGBA1c, Cholesterol or HDL, or DHEA)
 dataset_main <- read_csv("../outputs/dataset_main_analysis_2y.csv")
 ```
@@ -254,24 +247,6 @@ tab_model(main_mod_1_afr, main_mod_2_afr, main_mod_3_mdd_afr, main_mod_4_mdd_afr
 # tab_model(main_mod_1_total_CBCL, main_mod_2_total_CBCL,
 #           show.intercept = F, digits.rsq = 4, transform = NULL, auto.label = FALSE, collapse.ci = FALSE, 
 #           file = "../results_paper/tableS6.2_AL_CBCL_101223_WHOLE.xls")
-
-## bpm_y_scr_internal_t
-# main_mod_1_int_BPM <- get_model(data = dataset_main, outcome = "bpm_y_scr_internal_t")
-# main_mod_2_int_BPM <- get_model(data = dataset_main, outcome = "bpm_y_scr_internal_t", predictor = "allostatic_load", covariates = NULL)
-# main_mod_3_int_BPM <- get_model(data = dataset_main, outcome = "bpm_y_scr_internal_t", predictor = "allostatic_load")
-# 
-# tab_model(main_mod_1_int_BPM, main_mod_2_int_BPM, main_mod_3_int_BPM,
-#           show.intercept = F, digits.rsq = 4, transform = NULL, auto.label = FALSE, collapse.ci = FALSE, 
-#           file = "../results_paper/main_table2_AL_intBPM_101223_WHOLE.xls")
-
-## cbcl_scr_syn_external_t
-# main_mod_1_ext_CBCL <- get_model(data = dataset_main, outcome = "cbcl_scr_syn_external_t")
-# main_mod_2_ext_CBCL <- get_model(data = dataset_main, outcome = "cbcl_scr_syn_external_t", predictor = "allostatic_load", covariates = NULL)
-# main_mod_3_ext_CBCL <- get_model(data = dataset_main, outcome = "cbcl_scr_syn_external_t", predictor = "allostatic_load")
-# 
-# tab_model(main_mod_1_ext_CBCL, main_mod_2_ext_CBCL, main_mod_3_ext_CBCL,
-#           show.intercept = F, digits.rsq = 4, transform = NULL, auto.label = FALSE, collapse.ci = FALSE, 
-#           file = "../results_paper/main_table2_AL_extCBCL_101223_WHOLE.xls")
 ```
 
 
@@ -304,14 +279,6 @@ AL_components <- c("biospec_blood_cholesterol", "biospec_blood_hdl_cholesterol",
 dataset_2y_sens1 <- dataset_2y %>% filter(if_all(all_of(AL_components), ~ !is.na(.)))
 
 dataset_2y_sens2 <- dataset_2y %>% filter(if_any(all_of(AL_components), ~ !is.na(.)))
-
-# check number of NAs
-# library(sjmisc)
-# dataset_2y_sens2 %>% select(all_of(AL_components)) %>%
-#   # Add row cound number of NAs
-#   mutate(Number_nonNA = 8-(row_count(.[1:8], count = NA, append = FALSE) %>% pull())) %>%
-#   select(Number_nonNA) %>%
-#   table(., useNA = "ifany")
 
 
 # S10 - Rerun supplement table S3 on dataset_2y_sens1

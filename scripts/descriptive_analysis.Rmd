@@ -29,21 +29,21 @@ dataset_main <- read_csv("../outputs/dataset_main_analysis_2y.csv")
 # Correlation plots
 ```{r}
 # Correlation matrix among main data (5040 kids)
-## 1.	AL, and 8 components of AL / use label from Figure 2A
-png("../plots/correlation_AL_subcomponents.png", units="in", width = 7, height = 5, res = 420)
-cor_vars_AL_subcomp <- dataset_main %>% 
-  select(
-    `Allostatic Load` = allostatic_load,
-    `Cholesterol` = biospec_blood_cholesterol,
-    `HDL cholesterol` = biospec_blood_hdl_cholesterol,
-    `Systolic blood pressure` = blood_pressure_sys_mean,
-    `Diastolic blood pressure` = blood_pressure_dia_mean,
-    `Waist (cm)` = anthro_waist_cm,
-    `BMI` = bmi_percentiles,
-    `DHEA` = hormone_scr_dhea_mean,
-    `Hemoglobin A1C` = biospec_blood_hemoglobin_a1
-  )
-plot_cor(cor_vars_AL_subcomp, pch.cex = 0.7, tl.cex = 0.7, cl.cex = 0.7, cl.ratio = 0.4)
+## 1.	AL, and 8 components of AL / use label from Figure 2A - Will delete if not included in the Figure 2
+# png("../plots/correlation_AL_subcomponents.png", units="in", width = 7, height = 5, res = 420)
+# cor_vars_AL_subcomp <- dataset_main %>% 
+#   select(
+#     `Allostatic Load` = allostatic_load,
+#     `Cholesterol` = biospec_blood_cholesterol,
+#     `HDL cholesterol` = biospec_blood_hdl_cholesterol,
+#     `Systolic blood pressure` = blood_pressure_sys_mean,
+#     `Diastolic blood pressure` = blood_pressure_dia_mean,
+#     `Waist (cm)` = anthro_waist_cm,
+#     `BMI` = bmi_percentiles,
+#     `DHEA` = hormone_scr_dhea_mean,
+#     `Hemoglobin A1C` = biospec_blood_hemoglobin_a1
+#   )
+# plot_cor(cor_vars_AL_subcomp, pch.cex = 0.7, tl.cex = 0.7, cl.cex = 0.7, cl.ratio = 0.4)
 
 ## 2.	AL, and 8 components of AL, age
 png("../plots/correlation_AL_subcomponents_age.png", units="in", width = 7, height = 5, res = 420)
@@ -75,16 +75,16 @@ cor_vars_PRS_EUR <- dataset_main %>%
   )
 plot_cor(cor_vars_PRS_EUR, pch.cex = 0.4, tl.cex = 0.4, cl.cex = 0.4, cl.ratio = 0.3)
 
-### Among AFR
-png("../plots/correlation_PRS_AFR.png", units="in", width = 3, height = 2, res = 420)
-cor_vars_PRS_AFR <- dataset_main %>%
-  filter(genetic_afr == 1) %>% 
-  select(
-    `Diabetes PRS` = T2D_fromAFR_PRS,
-    `Major Depressive Disorder PRS` = MVP_MDD_PRS,
-    `PTSD PRS` = PTSD_fromAFR_PRS
-  )
-plot_cor(cor_vars_PRS_AFR, pch.cex = 0.4, tl.cex = 0.4, cl.cex = 0.4, cl.ratio = 0.4)
+### Among AFR - Will delete if not included in the Supplement Figure 1
+# png("../plots/correlation_PRS_AFR.png", units="in", width = 3, height = 2, res = 420)
+# cor_vars_PRS_AFR <- dataset_main %>%
+#   filter(genetic_afr == 1) %>% 
+#   select(
+#     `Diabetes PRS` = T2D_fromAFR_PRS,
+#     `Major Depressive Disorder PRS` = MVP_MDD_PRS,
+#     `PTSD PRS` = PTSD_fromAFR_PRS
+#   )
+# plot_cor(cor_vars_PRS_AFR, pch.cex = 0.4, tl.cex = 0.4, cl.cex = 0.4, cl.ratio = 0.4)
 ```
 
 # Table 1
