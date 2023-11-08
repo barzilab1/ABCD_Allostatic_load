@@ -377,8 +377,17 @@ ggsave("../plots/interaction_exposome_MDD_PRS.png", dpi = 620)
 ```
 
 
-
-
+# For the EUR/AFR ancestry kids - tabulation of their race and ethnicity (n/% White, n/% Black, n/% Hispanic)
+```{r}
+CreateTableOne(
+  data = dataset_main,
+  strata = "genetic_afr",
+  vars = c("race_white", "race_black", "ethnicity_hisp"),
+  factorVars = c("race_white", "race_black", "ethnicity_hisp"),
+  includeNA = F,
+  addOverall = F
+)
+```
 
 
 
