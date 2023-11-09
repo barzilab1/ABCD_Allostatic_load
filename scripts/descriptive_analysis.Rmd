@@ -382,8 +382,8 @@ ggsave("../plots/interaction_exposome_MDD_PRS.png", dpi = 620)
 CreateTableOne(
   data = dataset_main,
   strata = "genetic_afr",
-  vars = c("race_white", "race_black", "ethnicity_hisp"),
-  factorVars = c("race_white", "race_black", "ethnicity_hisp"),
+  vars = c("race_white", "race_black", "ethnicity_hisp", "sex_br"),
+  factorVars = c("race_white", "race_black", "ethnicity_hisp", "sex_br"),
   includeNA = F,
   addOverall = F
 )
