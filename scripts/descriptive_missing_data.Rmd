@@ -49,15 +49,15 @@ missing_main <- dataset_main %>% select(all_of(vars)) %>%
   arrange(desc(n_available)) %>% 
   select(Variable = variable, `Available data` = n_available, `Missing data` = n_miss, `Missing (%)` = pct_miss)
 
-missing_whole <- dataset_2y %>% select(all_of(vars)) %>% 
-  miss_var_summary() %>% 
-  mutate(pct_miss = paste0(round(pct_miss, 2), "%"),
-         n_available = nrow(dataset_main) - n_miss,) %>%
-  arrange(desc(n_available)) %>% 
-  select(Variable = variable, `Available data` = n_available, `Missing data` = n_miss, `Missing (%)` = pct_miss)
+# missing_whole <- dataset_2y %>% select(all_of(vars)) %>% 
+#   miss_var_summary() %>% 
+#   mutate(pct_miss = paste0(round(pct_miss, 2), "%"),
+#          n_available = nrow(dataset_main) - n_miss,) %>%
+#   arrange(desc(n_available)) %>% 
+#   select(Variable = variable, `Available data` = n_available, `Missing data` = n_miss, `Missing (%)` = pct_miss)
   
-write.csv(missing_main, "../outputs_paper/table_S1_main_data.csv")
-write.csv(missing_whole, "../outputs_paper/table_S1_whole_data.csv")
+write.csv(missing_main, "../outputs_paper/table_S2_main_data.csv")
+# write.csv(missing_whole, "../outputs_paper/table_S2_whole_data.csv")
 ```
 
 

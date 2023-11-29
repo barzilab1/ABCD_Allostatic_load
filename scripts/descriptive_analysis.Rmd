@@ -28,24 +28,7 @@ dataset_main <- read_csv("../outputs/dataset_main_analysis_2y.csv")
 
 # Correlation plots
 ```{r}
-# Correlation matrix among main data (5040 kids)
-## 1.	AL, and 8 components of AL / use label from Figure 2A - Will delete if not included in the Figure 2
-# png("../plots/correlation_AL_subcomponents.png", units="in", width = 7, height = 5, res = 420)
-# cor_vars_AL_subcomp <- dataset_main %>% 
-#   select(
-#     `Allostatic Load` = allostatic_load,
-#     `Cholesterol` = biospec_blood_cholesterol,
-#     `HDL cholesterol` = biospec_blood_hdl_cholesterol,
-#     `Systolic blood pressure` = blood_pressure_sys_mean,
-#     `Diastolic blood pressure` = blood_pressure_dia_mean,
-#     `Waist (cm)` = anthro_waist_cm,
-#     `BMI` = bmi_percentiles,
-#     `DHEA` = hormone_scr_dhea_mean,
-#     `Hemoglobin A1C` = biospec_blood_hemoglobin_a1
-#   )
-# plot_cor(cor_vars_AL_subcomp, pch.cex = 0.7, tl.cex = 0.7, cl.cex = 0.7, cl.ratio = 0.4)
-
-## 2.	AL, and 8 components of AL, age
+## 1.	AL, and 8 components of AL, age (Figure 2B)
 png("../plots/correlation_AL_subcomponents_age.png", units="in", width = 7, height = 5, res = 420)
 cor_vars_AL_subcomp_age <- dataset_main %>% 
   select(
@@ -60,9 +43,10 @@ cor_vars_AL_subcomp_age <- dataset_main %>%
     `Hemoglobin A1C` = biospec_blood_hemoglobin_a1,
     `Age (years)` = age_years
   )
+# cor_vars_AL_subcomp_age[,2:9] = winsor(cor_vars_AL_subcomp_age[,2:9],trim=0.01) (SF1)
 plot_cor(cor_vars_AL_subcomp_age, pch.cex = 0.7, tl.cex = 0.7, cl.cex = 0.7, cl.ratio = 0.4)
 
-## 3.	PRS separately for EUR (4 PRSs) and AFR (3 PRSs)
+## 2.	PRS separately for EUR (4 PRSs) and AFR (3 PRSs)
 ### Among EUR
 png("../plots/correlation_PRS_EUR.png", units="in", width = 3, height = 2, res = 420)
 cor_vars_PRS_EUR <- dataset_main %>%
@@ -119,7 +103,7 @@ dataset_main <- dataset_main %>%
         ),
         race = factor(race, c("NH-Black", "NH-White", "Hispanic")),
         
-        sex_br = recode(sex_br, `0` = "Male", `1` = "Female"), 
+        sex_br = recode(sex_br, `0` = "Male", `1` = "Female"),
         sex_br = factor(sex_br, c("Female", "Male")))
 ```
 
@@ -127,13 +111,13 @@ dataset_main <- dataset_main %>%
 # Figure 3A
 ## Scatterplot between exposome and allostatic load
 theme_set(theme_bw() +
-            theme(axis.text.x = element_text(size = 20, color = "black", face = "bold"),
-                  axis.text.y = element_text(size = 20, color = "black", face = "bold"),
-                  axis.title.x = element_text(size = 20, color = "black", face = "bold"),
-                  axis.title.y = element_text(size = 20, color = "black", face = "bold"),
+            theme(axis.text.x = element_text(lineheight = 20, color = "black", face = "bold"),
+                  axis.text.y = element_text(lineheight = 20, color = "black", face = "bold"),
+                  axis.title.x = element_text(lineheight = 20, color = "black", face = "bold"),
+                  axis.title.y = element_text(lineheight = 20, color = "black", face = "bold"),
                   axis.ticks = element_line(size = 0.5),
-                  legend.text = element_text(size = 20,  color = "black"),
-                  legend.title = element_text(size = 20, color = "black", face = "bold")))
+                  legend.text = element_text(lineheight = 20,  color = "black"),
+                  legend.title = element_text(lineheight = 20, color = "black", face = "bold")))
 
 ggplot(dataset_main, aes(x = exposome_score_1y, y = allostatic_load)) +  
   geom_point(color = "darkslategray4", alpha = 0.5) +
@@ -148,8 +132,8 @@ ggsave(filename = "../plots/scatterplot_AL_exposome.png", width = 7, height = 4,
 # Differential effects of sex and race between X Exposome and Y AL
 
 ## Stratified by sex
-ggplot(dataset_main %>% filter(!is.na(sex_br)) %>% rename("Sex" = sex_br), 
-                 aes(x=exposome_score_1y, y=allostatic_load, color=Sex, fill = Sex)) +
+ggplot(dataset_main %>% filter(!is.na(sex_br)), #%>% rename("Sex" = sex_br), 
+                 aes(x=exposome_score_1y, y=allostatic_load, color=sex_br, fill = sex_br)) +
     geom_smooth(method = lm, se = TRUE, fullrange = TRUE)+
     scale_color_manual(values = c("#1B9E77", "#D95F02")) +
     scale_fill_manual(values = c("#1B9E77", "#D95F02")) +
@@ -160,8 +144,8 @@ ggplot(dataset_main %>% filter(!is.na(sex_br)) %>% rename("Sex" = sex_br),
 ggsave(filename = "../plots/scatterplot_AL_exposome_by_sex.png", width = 7, height = 5, dpi = 620)
 
 ## Stratified by race
-ggplot(dataset_main %>% filter(!is.na(race)) %>% rename("Race" = race), 
-       aes(x=exposome_score_1y, y=allostatic_load, color=Race, fill = Race)) +
+ggplot(dataset_main %>% filter(!is.na(race)), #%>% rename("Race" = race), 
+       aes(x=exposome_score_1y, y=allostatic_load, color=race, fill = race)) +
   geom_smooth(method = lm, se = TRUE, fullrange = TRUE)+
   scale_color_manual(values = c("#E41A1C", "#377EB8", "#4DAF4A")) +
   scale_fill_manual(values = c("#E41A1C", "#377EB8", "#4DAF4A")) +
@@ -170,20 +154,22 @@ ggplot(dataset_main %>% filter(!is.na(race)) %>% rename("Race" = race),
   theme(legend.position = c(0.18, 0.75))
 
 ggsave(filename = "../plots/scatterplot_AL_exposome_by_race.png", width = 7, height = 5, dpi = 620)
+```
+
+Statistics for interaction
+```{r}
+covs <- c("age_years", "race_white", "race_black", "ethnicity_hisp", "sex_br", "household_income",  "highschool_diploma", "post_highschooler_education", "bachelor", "master_above")
+random_effects <- "(1 | site_id_l_br/rel_family_id)"
 
 
-## Statistics for interaction
-tab_model(lmer(allostatic_load ~ sex_br*exposome_score_1y + 
-                   age_years + race_white + race_black + ethnicity_hisp + household_income + parents_avg_edu +
-         (1 | site_id_l_br/rel_family_id), data = dataset_main))
+tab_model(lmer(paste0("allostatic_load ~ sex_br*exposome_score_1y + ", paste(covs, collapse = " + "), "+", random_effects)
+                  , data = dataset_main)) #significant 
 
-tab_model(lmer(allostatic_load ~ race_black*exposome_score_1y + 
-                   age_years + sex_br + race_white + ethnicity_hisp + household_income + parents_avg_edu +
-         (1 | site_id_l_br/rel_family_id), data = dataset_main))
+tab_model(lmer(paste0("allostatic_load ~ race_black*exposome_score_1y + ", paste(covs, collapse = " + "), "+", random_effects)
+                 , data = dataset_main)) # interaction not significant
 
-tab_model(lmer(allostatic_load ~ ethnicity_hisp*exposome_score_1y + 
-                   age_years + sex_br + race_black + race_white + household_income + parents_avg_edu +
-         (1 | site_id_l_br/rel_family_id), data = dataset_main))
+tab_model(lmer(paste0("allostatic_load ~ ethnicity_hisp*exposome_score_1y + ", paste(covs, collapse = " + "), "+", random_effects)
+        , data = dataset_main)) # interaction not significant
 ```
 
 ```{r}
@@ -191,10 +177,10 @@ tab_model(lmer(allostatic_load ~ ethnicity_hisp*exposome_score_1y +
 ## Allostatic load
 ## BY SEX (B1)
 ### Get p-value
-wilcox.test(allostatic_load ~ sex_br, dataset_main %>% filter(!is.na(sex)))$p.value #0.002475252
+wilcox.test(allostatic_load ~ sex_br, dataset_main %>% filter(!is.na(sex)))$p.value #0.002995456
 
 dataset_main %>% group_by(sex_br) %>% summarise(median = median(allostatic_load))
-rcompanion::wilcoxonRG(x = as.numeric(dataset_main$allostatic_load), g = as.factor(dataset_main$sex_br), verbose=TRUE)
+rcompanion::wilcoxonRG(x = as.numeric(dataset_main$allostatic_load), g = as.factor(dataset_main$sex_br), verbose=TRUE) #0.0484
 
 ggbetweenstats(
   data = dataset_main %>% filter(!is.na(sex_br)),
@@ -202,14 +188,14 @@ ggbetweenstats(
   y = allostatic_load,
   type = "nonparametric",
   plot.type = "box",
-  pairwise.comparisons = FALSE,
+  # pairwise.comparisons = FALSE,
   centrality.plotting = FALSE,
   bf.message = FALSE,
-  xlab = " ",
+  xlab = element_blank(),
   ylab = "Allostatic load (Z score)",
   violin.args = list(width = 0),
   palette = "Dark2",
-  results.subtitle = FALSE) +
+  results.subtitle = FALSE) + 
   scale_y_continuous(breaks = seq(-2, 6, 2)) +
   geom_signif(
     comparisons = list(c("Female", "Male")),
@@ -227,7 +213,9 @@ ggsave(filename = "../plots/AL_by_sex_boxplot.png", dpi = 620)
 
 
 dataset_main %>% group_by(race) %>% summarise(median = median(allostatic_load))
-FSA::dunnTest(allostatic_load ~ race,
+
+kruskal.test(allostatic_load ~ race, dataset_main)
+res = FSA::dunnTest(allostatic_load ~ race,
               data = dataset_main %>% 
                 mutate(allostatic_load = as.numeric(allostatic_load)),
               method = "holm")$res
@@ -242,8 +230,8 @@ ggbetweenstats(
   pairwise.display = "none",
   centrality.plotting = FALSE,
   bf.message = FALSE,
-  xlab = " ",
-  ylab = " ",
+  xlab = element_blank(),
+  ylab = element_blank(),
   violin.args = list(width = 0),
   palette = "Set1",
   results.subtitle = FALSE) +
@@ -251,9 +239,9 @@ ggbetweenstats(
     comparisons = list(c("NH-Black", "Hispanic"), c("NH-Black", "NH-White"), c("NH-White", "Hispanic")),
     map_signif_level = TRUE, textsize = 6,
     y_position = c(6, 5, 7),
-    vjust = 0
+    vjust = 0.1
   ) +
-  scale_y_continuous(breaks = seq(0, 4, 2)) +
+  scale_y_continuous(breaks = seq(0, 6, 2)) +
   theme(axis.text.x = element_text(size = 18, color = "black", face = "bold"),
         axis.text.y = element_text(size = 18, color = "black", face = "bold"),
         legend.text = element_text(size = 18))

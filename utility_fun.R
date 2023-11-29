@@ -61,19 +61,19 @@ plot_cor <- function(vars, ...) {
   return(plot)
 }
 
-# Run mediaton models among each ancestry
+# Run mediation models among each ancestry
 run_mediation <- function(IV, DV, Mediator, data, covariates = c("scale(age_years)", "scale(age_years)^2", "scale(age_years)^3", "sex_br")) {
   
   set.seed(060223)
   
-  mod1 <- paste0(c(paste0(Mediator, " ~ ", paste0("a1*", IV)), covariates), collapse = " + ")
-  mod2 <- paste0(c(paste0(DV, " ~ ", paste0("b1*", Mediator)), paste0("c*", IV), covariates ), collapse = " + ")
-  mod3 <- "indirecteffect := a1*b1"
-  mod4 <- "totaleffect := c + a1*b1"
+  formula1 <- paste0(Mediator, " ~ a1*", IV, " + " , paste0(covariates, collapse = " + "))
+  formula2 <- paste0(DV, " ~ b1*", Mediator ," + c*", IV, "+", paste0(covariates, collapse = " + "))
+  formula3 <- "indirecteffect := a1*b1"
+  formula4 <- "totaleffect := c + a1*b1"
   
-  mod <- paste(mod1, mod2, mod3, mod4, sep = " \n ")
+  mediation_formula <- paste(formula1, formula2, formula3, formula4, sep = " \n ")
   
-  mediation_mod <- sem(mod, data = data, se = "bootstrap", bootstrap = 500)
+  mediation_mod <- sem(mediation_formula, data = data, se = "bootstrap", bootstrap = 500)
   results <- standardizedSolution(mediation_mod, type = "std.lv")
   summary <-summary(mediation_mod)
   
@@ -83,18 +83,20 @@ run_mediation <- function(IV, DV, Mediator, data, covariates = c("scale(age_year
 
 # run mixed models
 covar_mixed_mod <- c("scale(age_years)", "scale(age_years)^2", "scale(age_years)^3",
-                     "race_white", "race_black", "ethnicity_hisp", "sex_br", "household_income", "parents_avg_edu")
+                     "race_white", "race_black", "ethnicity_hisp", "sex_br", "household_income") #"highschool_diploma", "post_highschooler_education", "bachelor", "master_above"
 random_effects <- "(1 | site_id_l_br/rel_family_id)"
+
 
 get_model <- function(data, outcome, predictor = NULL, covariates = covar_mixed_mod, random_eff = random_effects) {
   
   mod_formula <- reformulate(c(covariates, predictor, random_eff), response = outcome)
   
-      model <- lmer(mod_formula, data = data,
-                    control = lmerControl(check.nobs.vs.nlev = "ignore",
-                                          check.nobs.vs.rankZ = "ignore",
-                                          check.nobs.vs.nRE = "ignore",
-                                          optimizer = "bobyqa", optCtrl = list(maxfun = 2e5)))
+  model <- lmer(mod_formula, data = data,
+                control = lmerControl(check.nobs.vs.nlev = "ignore",
+                                      check.nobs.vs.rankZ = "ignore",
+                                      check.nobs.vs.nRE = "ignore",
+                                      optimizer = "bobyqa", optCtrl = list(maxfun = 2e5)))
+      
   return(model)
 }
 

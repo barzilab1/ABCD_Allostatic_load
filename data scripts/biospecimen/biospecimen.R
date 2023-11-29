@@ -4,8 +4,6 @@ library(psych)
 source("config.R")
 source("utility_fun.R")
 
-### TODO check with Ran what should be the boundaries for all of markers
-
 
 ########### Hormone Saliva Salimetric Scores ########### 
 

@@ -52,18 +52,13 @@ BMI_dataset$bmi_above_95p = (as.numeric(BMI_dataset$bmi_percentiles) >= 95)*1
 BMI_dataset$bmi_above_85p = (as.numeric(BMI_dataset$bmi_percentiles) >= 85)*1
 
 
-## https://github.com/carriedaymont/growthcleanr
-## get exact percentile 
-# BMI_dataset$bz = (((BMI_dataset$BMI / BMI_dataset$M) ^ BMI_dataset$L) - 1) / (BMI_dataset$L * BMI_dataset$S)
-# BMI_dataset$exact_percentile = round(100 * pnorm(BMI_dataset$bz),2)
 
 # Use data at 2-year FU
-BMI_dataset = BMI_dataset[BMI_dataset$eventname == "2_year_follow_up_y_arm_1",]
+BMI_dataset = BMI_dataset[BMI_dataset$eventname == "2_year_follow_up_y_arm_1", c("src_subject_id", "interview_date", "interview_age", "eventname", "sex",
+                                                                                 "anthroweightcalc", "anthroheightcalc", "anthro_waist_cm",
+                                                                                 "BMI","bmi_above_85p","bmi_above_95p", "bmi_percentiles")]
 
-write.csv(file = "data/ABCD_BMI.csv", x = BMI_dataset[, c("src_subject_id", "interview_date", "interview_age", "eventname", "sex",
-                                                        "anthroweightcalc", "anthroheightcalc", "anthro_waist_cm",
-                                                        "BMI","bmi_above_85p","bmi_above_95p", "bmi_percentiles")],
-          row.names=F, na = "")
+write.csv(file = "data/ABCD_BMI.csv", x = BMI_dataset, row.names=F, na = "")
 
 
 

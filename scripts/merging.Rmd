@@ -23,7 +23,8 @@ demo_parent_edu <- read_csv("../data/demo_parent_edu.csv")
 biospecimen <- read_csv("../data/biospecimen.csv")
 ABCD_BMI <- read_csv("../data/ABCD_BMI.csv")
 psychopathology_sum_scores <- read_csv("../data/psychopathology_sum_scores.csv")
-family_relationship <- read_csv("../data/family_relationship.csv")
+family_relationship <- read_csv("../data/family_relationship.csv") %>%  
+  select(src_subject_id, rel_family_id)
 site <- read_csv("../data/site.csv")
 exposome <- read_csv(file.path(e_factor_files_path, "ABCD_Exposome_bifactor_scores_16March2021.csv")) %>%
   mutate(ID = paste0("NDAR_", ID)) %>% # data at 1y FU
@@ -51,26 +52,17 @@ dataset <- demo_2y  %>%
 dataset <- dataset %>% mutate(age_years = interview_age/12)
 ```
 
-```{r}
-# Check the list of participants with errors in measures of weight and height (ABCD 5.0) # at 2-year FU only
-IDs_error <- c("NDAR_INVM2AA5DTD", "NDAR_INVVMT7W436", "NDAR_INVVDAGZAU0", "NDAR_INV39Z1U19N", "NDAR_INVLEXJMGJ6")
-
-# Check of all those kids were included in the allostatic load data
-table(IDs_error %in% dataset$src_subject_id[!is.na(dataset$allostatic_load)]) # 5
-
-# Take those kids out from the data
-dataset <- dataset %>% filter(!src_subject_id %in% IDs_error)
-```
 
 # Filter data for main analysis - include kids that have at least 1 biological indicator of allostatic load in the 2-year data timepoint (HGBA1c, Cholesterol or HDL, or DHEA)
 ```{r}
 dataset_main <- dataset %>% 
-filter(if_any(c(biospec_blood_hemoglobin_a1, biospec_blood_cholesterol, biospec_blood_hdl_cholesterol, hormone_scr_dhea_mean), ~ !is.na(.)))
+filter(if_any(c(biospec_blood_hemoglobin_a1, biospec_blood_cholesterol, biospec_blood_hdl_cholesterol, hormone_scr_dhea_mean), ~ !is.na(.)) )%>% 
+filter(if_any(c(BMI, anthro_waist_cm, blood_pressure_sys_mean, blood_pressure_dia_mean), ~ !is.na(.)))
 
-dataset %>% 
-filter(if_all(c(biospec_blood_hemoglobin_a1, biospec_blood_cholesterol, biospec_blood_hdl_cholesterol, hormone_scr_dhea_mean), ~ !is.na(.))) %>% 
+dataset %>% filter(if_all(c(biospec_blood_hemoglobin_a1, biospec_blood_cholesterol, biospec_blood_hdl_cholesterol, hormone_scr_dhea_mean, BMI, anthro_waist_cm, blood_pressure_sys_mean, blood_pressure_dia_mean), ~ !is.na(.))) %>%
   dim()
 ```
+
 
 ```{r}
 write.csv("../outputs/dataset_2y.csv", x = dataset, row.names = F, na = "")
