@@ -1,0 +1,220 @@
+---
+title: "Additional analyses"
+author: "Kate Tran"
+date: "2024-02-12"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r}
+suppressMessages(library(dplyr))
+suppressMessages(library(readr))
+suppressMessages(library(lme4))
+suppressMessages(library(sjPlot))
+suppressMessages(library(lavaan))
+source("../utility_fun.R")
+source("../config.R")
+```
+
+```{r}
+data_main <- read_csv("../outputs/dataset_main_analysis_2y.csv")
+
+data_main <- data_main %>% 
+  mutate(Z_raw_total_BPM = scale(bpm_y_scr_totalprob_r),
+         Z_raw_total_CBCL = scale(cbcl_scr_syn_totprob_r))
+
+data_eur <- data_main %>% filter(genetic_afr == 0)
+data_afr <- data_main %>% filter(genetic_afr == 1)
+
+covar_whole <- c("scale(age_years)", "scale(age_years)^2", "scale(age_years)^3", "sex_br",
+                 "race_black", "race_white", "ethnicity_hisp", "household_income")
+```
+
+# Reviewer comment 1
+```{r}
+# 3 IVs
+run_mediation_3Ms <- function(DV, data = data_eur, covariates = c("scale(age_years)", "scale(age_years)^2", "scale(age_years)^3", "sex_br")) {
+  set.seed(060223)
+  
+  formula1 <- "allostatic_load ~ a1*exposome_score_1y + a2*T2D_fromEUR_PRS + a3*MDD_PRS + scale(age_years) + scale(age_years)^2 + scale(age_years)^3 + sex_br"
+  formula2 <- paste(DV, " ~ b*allostatic_load + c1*exposome_score_1y + c2*T2D_fromEUR_PRS + c3*MDD_PRS +  + scale(age_years) + scale(age_years)^2 + scale(age_years)^3 + sex_br")
+  formula3 <- "indirecteffectExp := a1*b"
+  formula4 <- "indirecteffectT2D := a2*b"
+  formula5 <- "indirecteffectMDD := a3*b"
+  formula6 <- "totaleffect := a1*b + a2*b + a3*b + c1 + c2 + c3"
+  
+  mediation_formula <- paste(formula1, formula2, formula3, formula4, formula5, formula6, sep = " \n ")
+  
+  mediation_mod <- sem(mediation_formula, data = data, se = "bootstrap", bootstrap = 500)
+  results <- standardizedSolution(mediation_mod, type = "std.lv")
+  summary <-summary(mediation_mod)
+  
+  return(list(results = results,  summary = summary))
+}
+
+# DV BPM
+mod_3Ms_AL_Zbpm_eur <- run_mediation_3Ms(DV = "Z_raw_total_BPM")
+mod_3Ms_AL_Zbpm_eur$results %>% htmlTable::htmlTable()
+mod_3Ms_AL_Zbpm_eur$summary$data$nobs
+# Mediation: 2 IVs in one model: genentic and exposomic, 1 mediator and 1 DV # Only EUR
+# IV Exposme, IV MD-PRS, IV T2D-PRS in same model, Al is mediator, DV BPM or CBCL
+
+# DV CBCL
+mod_3Ms_AL_Zcbcl_eur <- run_mediation_3Ms(DV = "Z_raw_total_CBCL")
+mod_3Ms_AL_Zcbcl_eur$results %>% htmlTable::htmlTable()
+mod_3Ms_AL_Zcbcl_eur$summary$data$nobs
+
+
+# 2 IVs
+run_mediation_2Ms <- function(IV_PRS, DV, data = data_eur, covariates = c("scale(age_years)", "scale(age_years)^2", "scale(age_years)^3", "sex_br")) {
+  set.seed(060223)
+  
+  formula1 <- paste("allostatic_load ~ a1*exposome_score_1y + a2*", IV_PRS, "+ scale(age_years) + scale(age_years)^2 + scale(age_years)^3 + sex_br")
+  formula2 <- paste(DV, " ~ b*allostatic_load + c1*exposome_score_1y + c2*", IV_PRS, "+ scale(age_years) + scale(age_years)^2 + scale(age_years)^3 + sex_br")
+  formula3 <- "indirecteffectExp := a1*b"
+  formula4 <- "indirecteffectPRS := a2*b"
+  formula5 <- "totaleffect := a1*b + a2*b + c1 + c2"
+  
+  mediation_formula <- paste(formula1, formula2, formula3, formula4, formula5, sep = " \n ")
+  
+  mediation_mod <- sem(mediation_formula, data = data, se = "bootstrap", bootstrap = 500)
+  results <- standardizedSolution(mediation_mod, type = "std.lv")
+  summary <-summary(mediation_mod)
+  
+  return(list(results = results,  summary = summary))
+}
+
+mod_2Ms_t2d_AL_Zbpm_eur <- run_mediation_2Ms(IV_PRS = "T2D_fromEUR_PRS", DV = "Z_raw_total_BPM")
+mod_2Ms_t2d_AL_Zbpm_eur$results %>% htmlTable::htmlTable()
+mod_2Ms_t2d_AL_Zbpm_eur$summary$data$nobs
+
+
+mod_2Ms_t2d_AL_Zcbcl_eur <- run_mediation_2Ms(IV_PRS = "T2D_fromEUR_PRS", DV = "Z_raw_total_CBCL")
+mod_2Ms_t2d_AL_Zcbcl_eur$results %>% htmlTable::htmlTable()
+mod_2Ms_t2d_AL_Zcbcl_eur$summary$data$nobs
+
+
+mod_2Ms_mdd_AL_Zbpm_eur <- run_mediation_2Ms(IV_PRS = "MDD_PRS", DV = "Z_raw_total_BPM")
+mod_2Ms_mdd_AL_Zbpm_eur$results %>% htmlTable::htmlTable()
+mod_2Ms_mdd_AL_Zbpm_eur$summary$data$nobs
+
+
+mod_2Ms_mdd_AL_Zcbcl_eur <- run_mediation_2Ms(IV_PRS = "MDD_PRS", DV = "Z_raw_total_CBCL")
+mod_2Ms_mdd_AL_Zcbcl_eur$results %>% htmlTable::htmlTable()
+mod_2Ms_mdd_AL_Zcbcl_eur$summary$data$nobs
+```
+
+# Reviewer comment 2
+```{r}
+# Simple regression DV ~ IV + covar
+# BPM/CBCL ~ MDD_PRS
+# BPM/CBCL ~ T2D_PRS
+# BPM/CBCL ~ Exp_PRS
+# EUR
+# AFR separately
+
+mod_fn <- function(IV, DV, data){
+  covariates <- c("scale(age_years)", "scale(age_years)^2", "scale(age_years)^3", "sex_br")
+  mod_formula <- reformulate(c(covariates, IV), response = DV)
+  mod <- lm(mod_formula, data = data)
+}
+
+# Among EUR
+mod_t2d_bpm <- mod_fn(IV = "T2D_fromEUR_PRS", DV = "Z_raw_total_BPM", data = data_eur)
+mod_mdd_bpm <- mod_fn(IV = "MDD_PRS", DV = "Z_raw_total_BPM", data = data_eur)
+mod_exp_bpm <- mod_fn(IV = "exposome_score_1y", DV = "Z_raw_total_BPM", data = data_eur)
+
+mod_t2d_cbcl <- mod_fn(IV = "T2D_fromEUR_PRS", DV = "Z_raw_total_CBCL", data = data_eur)
+mod_mdd_cbcl <- mod_fn(IV = "MDD_PRS", DV = "Z_raw_total_CBCL", data = data_eur)
+mod_exp_cbcl <- mod_fn(IV = "exposome_score_1y", DV = "Z_raw_total_CBCL", data = data_eur)
+
+tab_model(mod_t2d_bpm, mod_mdd_bpm, mod_exp_bpm)
+tab_model(mod_t2d_cbcl, mod_mdd_cbcl, mod_exp_cbcl)
+
+# Among AFR
+mod_t2d_bpm_afr <- mod_fn(IV = "T2D_fromEUR_PRS", DV = "Z_raw_total_BPM", data = data_afr)
+mod_mdd_bpm_afr <- mod_fn(IV = "MDD_PRS", DV = "Z_raw_total_BPM", data = data_afr)
+mod_exp_bpm_afr <- mod_fn(IV = "exposome_score_1y", DV = "Z_raw_total_BPM", data = data_afr)
+
+mod_t2d_cbcl_afr <- mod_fn(IV = "T2D_fromEUR_PRS", DV = "Z_raw_total_CBCL", data = data_afr)
+mod_mdd_cbcl_afr <- mod_fn(IV = "MDD_PRS", DV = "Z_raw_total_CBCL", data = data_afr)
+mod_exp_cbcl_afr <- mod_fn(IV = "exposome_score_1y", DV = "Z_raw_total_CBCL", data = data_afr)
+
+tab_model(mod_t2d_bpm_afr, mod_exp_bpm_afr)
+tab_model(mod_t2d_cbcl_afr, mod_exp_cbcl_afr)
+```
+
+
+# Reviewer comment 3
+```{r}
+exposome_corr <- read_csv(file.path(e_factor_files_path, "ABCD_Exposome_correlated-traits_scores_16March2021.csv")) %>%
+  mutate(ID = paste0("NDAR_", ID)) %>% # data at 1y FU
+  rename(src_subject_id = ID)
+
+dataset_main <- data_main %>% 
+  left_join(exposome_corr)
+
+mod1.1 <- get_model(data = dataset_main, outcome = "allostatic_load", predictor = "Household_Adversity", covariates = NULL)
+mod1.2 <- get_model(data = dataset_main, outcome = "allostatic_load", predictor = "Household_Adversity")
+
+mod2.1 <- get_model(data = dataset_main, outcome = "allostatic_load", predictor = "Neighborhood_Poverty", covariates = NULL)
+mod2.2 <- get_model(data = dataset_main, outcome = "allostatic_load", predictor = "Neighborhood_Poverty")
+
+mod3.1 <- get_model(data = dataset_main, outcome = "allostatic_load", predictor = "DayToDay_Adversity", covariates = NULL)
+mod3.2 <- get_model(data = dataset_main, outcome = "allostatic_load", predictor = "DayToDay_Adversity")
+
+mod3.1.cbcl <- get_model(data = dataset_main, outcome = "Z_raw_total_CBCL", predictor = "DayToDay_Adversity", covariates = NULL)
+mod3.2.cbcl <- get_model(data = dataset_main, outcome = "Z_raw_total_CBCL", predictor = "DayToDay_Adversity")
+
+mod4.1 <- get_model(data = dataset_main, outcome = "allostatic_load", predictor = "State_Conservatism_Ruralness", covariates = NULL)
+mod4.2 <- get_model(data = dataset_main, outcome = "allostatic_load", predictor = "State_Conservatism_Ruralness")
+
+mod5.1 <- get_model(data = dataset_main, outcome = "allostatic_load", predictor = "Family_Values", covariates = NULL)
+mod5.2 <- get_model(data = dataset_main, outcome = "allostatic_load", predictor = "Family_Values")
+
+mod6.1 <- get_model(data = dataset_main, outcome = "allostatic_load", predictor = "Birth_Pregnancy_Complications", covariates = NULL)
+mod6.2 <- get_model(data = dataset_main, outcome = "allostatic_load", predictor = "Birth_Pregnancy_Complications")
+
+tab_model(mod1.1, mod1.2, mod2.1, mod2.2, mod3.1, mod3.2, mod4.1, mod4.2, mod5.1, mod5.2, mod6.1, mod6.2,
+          show.intercept = F, digits.rsq = 4, transform = NULL, auto.label = FALSE, collapse.ci = FALSE , 
+          file = "../results_paper/tableS4_exposome_AL_corr_021324_WHOLE.xls")
+
+tab_model(mod3.1.cbcl, mod3.2.cbcl,
+          show.intercept = F, digits.rsq = 4, transform = NULL, auto.label = FALSE, collapse.ci = FALSE)
+
+
+# Check Day to Day model? the direction is opposite which is very weird. also, the 95%CI is weird.
+# can you also send me the model with all subscores from the bifactor model?
+# this would be a model where you include all 7 exposome scores in one models (with and without covariates). the 7 exposome scores include the general exposome score (that we used in the main paper) and the 6 subfactors that were derived from the same measurement model.
+exposome_add <- read_csv(file.path(e_factor_files_path, "ABCD_Exposome_bifactor_scores_16March2021.csv")) %>%
+  mutate(ID = paste0("NDAR_", ID)) %>% # data at 1y FU
+  rename(src_subject_id = ID, exposome_score_1y = Adversity_General_Factor)
+
+dataset_main <- dataset_main %>% left_join(exposome_add)
+
+bifactor_predictors <- exposome_add %>% select(-1) %>% names()
+
+mod7.1 <- get_model(data = dataset_main, outcome = "allostatic_load", predictor = bifactor_predictors, covariates = NULL)
+mod7.2 <- get_model(data = dataset_main, outcome = "allostatic_load", predictor = bifactor_predictors)
+
+tab_model(mod7.1, mod7.2,
+          show.intercept = F, digits.rsq = 4, transform = NULL, auto.label = FALSE, collapse.ci = FALSE)
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
