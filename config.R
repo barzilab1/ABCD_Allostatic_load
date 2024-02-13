@@ -6,7 +6,7 @@
 
 #path to abcd Restricted Access folder
 root = "~"
-box_path = "Box Sync"
+box_path = "Library/CloudStorage/Box-Box"
 abcd_box_path = "2. Barzi Lab - Restricted Access/2-ABCD"
 abcd_data_path = "ABCD data"
 prs_box_path = "Ran_Barzilay"
