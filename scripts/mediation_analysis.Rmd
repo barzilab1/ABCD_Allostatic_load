@@ -37,23 +37,23 @@ covar_whole <- c("scale(age_years)", "scale(age_years)^2", "scale(age_years)^3",
 ```
 
 # Figure 5
-## Figure5-A1 & ST8: Exposome >> AL >> BPM
+## Figure5-A1 & ST10: Exposome >> AL >> BPM
 ```{r}
 # Z score of raw BPM
 mod_exp_AL_Zbpm <- run_mediation(IV = "exposome_score_1y", DV = "Z_raw_total_BPM", Mediator = "allostatic_load", data = data_main, covariates = covar_whole)
 mod_exp_AL_Zbpm$results %>% htmlTable::htmlTable()
-mod_exp_AL_Zbpm$summary
+mod_exp_AL_Zbpm$summary$data$nobs
 ```
 
-## Figure5-A2 & ST8: Exposome >> AL >> CBCL
+## Figure5-A2 & ST10: Exposome >> AL >> CBCL
 ```{r}
 # Z score of raw CBCL
 mod_exp_AL_Zcbcl <- run_mediation(IV = "exposome_score_1y", DV = "Z_raw_total_CBCL", Mediator = "allostatic_load", data = data_main, covariates = covar_whole)
 mod_exp_AL_Zcbcl$results %>% htmlTable::htmlTable()
-mod_exp_AL_Zcbcl$summary
+mod_exp_AL_Zcbcl$summary$data$nobs
 ```
 
-## Figure5-B1 & ST9: Diabetes PRS >> AL >> BPM total T scores
+## Figure5-B1 & ST11: Diabetes PRS >> AL >> BPM total T scores
 ```{r}
 # Z score of raw BPM
 mod_t2dPRS_AL_Zbpm_eur <- run_mediation(IV = "T2D_fromEUR_PRS", DV = "Z_raw_total_BPM", Mediator = "allostatic_load", data = data_eur)
@@ -61,7 +61,7 @@ mod_t2dPRS_AL_Zbpm_eur$results %>% htmlTable::htmlTable()
 mod_t2dPRS_AL_Zbpm_eur$summary$data$nobs
 ```
 
-## Figure5-B2 & ST9: Diabetes PRS >> AL >> CBCL total T scores
+## Figure5-B2 & ST11: Diabetes PRS >> AL >> CBCL total T scores
 ```{r}
 # Z score of raw CBCL
 mod_t2dPRS_AL_Zcbcl_eur <- run_mediation(IV = "T2D_fromEUR_PRS", DV = "Z_raw_total_CBCL", Mediator = "allostatic_load", data = data_eur)
@@ -69,7 +69,7 @@ mod_t2dPRS_AL_Zcbcl_eur$results %>% htmlTable::htmlTable()
 mod_t2dPRS_AL_Zcbcl_eur$summary$data$nobs
 ```
 
-## Figure5-C1 & ST9: MDD PRS >> AL >> BPM total T scores
+## Figure5-C1 & ST11: MDD PRS >> AL >> BPM total T scores
 ```{r}
 # Z score of raw BPM
 mod_mddPRS_AL_Zbpm_eur <- run_mediation(IV = "MDD_PRS", DV = "Z_raw_total_BPM", Mediator = "allostatic_load", data = data_eur)
@@ -77,7 +77,7 @@ mod_mddPRS_AL_Zbpm_eur$results %>% htmlTable::htmlTable()
 mod_mddPRS_AL_Zbpm_eur$summary$data$nobs
 ```
 
-## Figure5-C2 & ST9: MDD PRS >> AL >> CBCL total T scores
+## Figure5-C2 & ST11: MDD PRS >> AL >> CBCL total T scores
 ```{r}
 # Z score of raw CBCL
 mod_mddPRS_AL_Zcbcl_eur <- run_mediation(IV = "MDD_PRS", DV = "Z_raw_total_CBCL", Mediator = "allostatic_load", data = data_eur)
@@ -85,8 +85,25 @@ mod_mddPRS_AL_Zcbcl_eur$results %>% htmlTable::htmlTable()
 mod_mddPRS_AL_Zcbcl_eur$summary$data$nobs
 ```
 
-# Supplement table S10
-## Supplement table S10.1: Diabetes PRS >> AL >> BPM total T scores
+## Supplement table S12
+```{r}
+# 3 IVs
+# DV BPM
+mod_3Ms_AL_Zbpm_eur <- run_mediation_3IVs(DV = "Z_raw_total_BPM")
+mod_3Ms_AL_Zbpm_eur$results %>% htmlTable::htmlTable()
+mod_3Ms_AL_Zbpm_eur$summary$data$nobs
+```
+
+## Supplement table S13
+```{r}
+# DV CBCL
+mod_3Ms_AL_Zcbcl_eur <- run_mediation_3IVs(DV = "Z_raw_total_CBCL")
+mod_3Ms_AL_Zcbcl_eur$results %>% htmlTable::htmlTable()
+mod_3Ms_AL_Zcbcl_eur$summary$data$nobs
+```
+
+# Supplement table S13
+## Supplement table S13.1: Diabetes PRS >> AL >> BPM total T scores
 ```{r}
 # Z score of raw BPM
 mod_t2dPRS_AL_Zbpm_afr <- run_mediation(IV = "T2D_fromAFR_PRS", DV = "Z_raw_total_BPM", Mediator = "allostatic_load", data = data_afr)
@@ -94,7 +111,7 @@ mod_t2dPRS_AL_Zbpm_afr$results %>% htmlTable::htmlTable()
 mod_t2dPRS_AL_Zbpm_afr$summary$data$nobs
 ```
 
-## Supplement table S10.2: Diabetes PRS >> AL >> CBCL total T scores
+## Supplement table S13.2: Diabetes PRS >> AL >> CBCL total T scores
 ```{r}
 # Z score of raw CBCL
 mod_t2dPRS_AL_Zcbcl_afr <- run_mediation(IV = "T2D_fromAFR_PRS", DV = "Z_raw_total_CBCL", Mediator = "allostatic_load", data = data_afr)
@@ -102,7 +119,7 @@ mod_t2dPRS_AL_Zcbcl_afr$results %>% htmlTable::htmlTable()
 mod_t2dPRS_AL_Zcbcl_afr$summary$data$nobs
 ```
 
-## Supplement table S10.3: MDD PRS >> AL >> BPM total T scores
+## Supplement table S13.3: MDD PRS >> AL >> BPM total T scores
 ```{r}
 # Z score of raw BPM
 mod_mddPRS_AL_Zbpm_afr <- run_mediation(IV = "MVP_MDD_PRS", DV = "Z_raw_total_BPM", Mediator = "allostatic_load", data = data_afr)
@@ -110,7 +127,7 @@ mod_mddPRS_AL_Zbpm_afr$results %>% htmlTable::htmlTable()
 mod_mddPRS_AL_Zbpm_afr$summary$data$nobs
 ```
 
-## Supplement table S10.4: MDD PRS >> AL >> CBCL total T scores
+## Supplement table S13.4: MDD PRS >> AL >> CBCL total T scores
 ```{r}
 # Z score of raw CBCL
 mod_mddPRS_AL_Zcbcl_afr <- run_mediation(IV = "MVP_MDD_PRS", DV = "Z_raw_total_CBCL", Mediator = "allostatic_load", data = data_afr)
@@ -118,8 +135,8 @@ mod_mddPRS_AL_Zcbcl_afr$results %>% htmlTable::htmlTable()
 mod_mddPRS_AL_Zcbcl_afr$summary$data$nobs
 ```
 
-# Supplement table S14
-## Supplement table S14.1: BMI PRS >> AL >> BPM total T scores
+# Supplement table S18
+## Supplement table S18.1: BMI PRS >> AL >> BPM total T scores
 ```{r}
 # Z score
 mod_bmiPRS_AL_Zbpm_eur <- run_mediation(IV = "BMI_PRS", DV = "Z_raw_total_BPM", Mediator = "allostatic_load", data = data_eur)
@@ -127,7 +144,7 @@ mod_bmiPRS_AL_Zbpm_eur$results %>% htmlTable::htmlTable()
 mod_bmiPRS_AL_Zbpm_eur$summary$data$nobs
 ```
 
-## Supplement table S14.2: BMI PRS >> AL >> CBCL total T scores
+## Supplement table S18.2: BMI PRS >> AL >> CBCL total T scores
 ```{r}
 # Z score
 mod_bmiPRS_AL_Zcbcl_eur <- run_mediation(IV = "BMI_PRS", DV = "Z_raw_total_CBCL", Mediator = "allostatic_load", data = data_eur)
@@ -135,7 +152,7 @@ mod_bmiPRS_AL_Zcbcl_eur$results %>% htmlTable::htmlTable()
 mod_bmiPRS_AL_Zcbcl_eur$summary$data$nobs
 ```
 
-## Supplement table S14.3: PTSD PRS >> AL >> BPM total T scores
+## Supplement table S18.3: PTSD PRS >> AL >> BPM total T scores
 ```{r}
 # Z score
 mod_ptsdPRS_AL_Zbpm_eur <- run_mediation(IV = "PTSD_fromEUR_PRS", DV = "Z_raw_total_BPM", Mediator = "allostatic_load", data = data_eur)
@@ -143,13 +160,14 @@ mod_ptsdPRS_AL_Zbpm_eur$results %>% htmlTable::htmlTable()
 mod_ptsdPRS_AL_Zbpm_eur$summary$data$nobs
 ```
 
-## Supplement table S14.4: PTSD PRS >> AL >> CBCL total T scores
+## Supplement table S18.4: PTSD PRS >> AL >> CBCL total T scores
 ```{r}
 # Z score
 mod_ptsdPRS_AL_Zcbcl_eur <- run_mediation(IV = "PTSD_fromEUR_PRS", DV = "Z_raw_total_CBCL", Mediator = "allostatic_load", data = data_eur)
 mod_ptsdPRS_AL_Zcbcl_eur$results %>% htmlTable::htmlTable()
 mod_ptsdPRS_AL_Zcbcl_eur$summary$data$nobs
 ```
+
 
 
 

@@ -80,6 +80,25 @@ run_mediation <- function(IV, DV, Mediator, data, covariates = c("scale(age_year
   return(list(results = results,  summary = summary))
 }
 
+# Run mediation models among each ancestry - 3 IVs
+run_mediation_3IVs <- function(DV, data = data_eur, covariates = c("scale(age_years)", "scale(age_years)^2", "scale(age_years)^3", "sex_br")) {
+  set.seed(060223)
+  
+  formula1 <- "allostatic_load ~ a1*exposome_score_1y + a2*T2D_fromEUR_PRS + a3*MDD_PRS + scale(age_years) + scale(age_years)^2 + scale(age_years)^3 + sex_br"
+  formula2 <- paste(DV, " ~ b*allostatic_load + c1*exposome_score_1y + c2*T2D_fromEUR_PRS + c3*MDD_PRS +  + scale(age_years) + scale(age_years)^2 + scale(age_years)^3 + sex_br")
+  formula3 <- "indirecteffectExp := a1*b"
+  formula4 <- "indirecteffectT2D := a2*b"
+  formula5 <- "indirecteffectMDD := a3*b"
+  formula6 <- "totaleffect := a1*b + a2*b + a3*b + c1 + c2 + c3"
+  
+  mediation_formula <- paste(formula1, formula2, formula3, formula4, formula5, formula6, sep = " \n ")
+  
+  mediation_mod <- sem(mediation_formula, data = data, se = "bootstrap", bootstrap = 500)
+  results <- standardizedSolution(mediation_mod, type = "std.lv")
+  summary <-summary(mediation_mod)
+  
+  return(list(results = results,  summary = summary))
+}
 
 # run mixed models
 covar_mixed_mod <- c("scale(age_years)", "scale(age_years)^2", "scale(age_years)^3",
@@ -100,7 +119,12 @@ get_model <- function(data, outcome, predictor = NULL, covariates = covar_mixed_
   return(model)
 }
 
-
+# Simple linear regression
+get_simple_mod <- function(predictor, outcome, data){
+  covariates <- c("scale(age_years)", "scale(age_years)^2", "scale(age_years)^3", "sex_br")
+  mod_formula <- reformulate(c(covariates, predictor), response = outcome)
+  mod <- lm(mod_formula, data = data)
+}
 
 
 
