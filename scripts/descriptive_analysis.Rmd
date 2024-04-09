@@ -29,7 +29,7 @@ dataset_main <- read_csv("../outputs/dataset_main_analysis_2y.csv")
 # Correlation plots
 ```{r}
 ## 1.	AL, and 8 components of AL, age (Figure 2B)
-png("../plots/correlation_AL_subcomponents_age.png", units="in", width = 7, height = 5, res = 420)
+pdf("../plots/correlation_AL_subcomponents_age.pdf", width = 7, height = 5)
 cor_vars_AL_subcomp_age <- dataset_main %>% 
   select(
     `Allostatic Load` = allostatic_load,
@@ -46,9 +46,11 @@ cor_vars_AL_subcomp_age <- dataset_main %>%
 # cor_vars_AL_subcomp_age[,2:9] = winsor(cor_vars_AL_subcomp_age[,2:9],trim=0.01) (SF1)
 plot_cor(cor_vars_AL_subcomp_age, pch.cex = 0.7, tl.cex = 0.7, cl.cex = 0.7, cl.ratio = 0.4)
 
+dev.off()
+
 ## 2.	PRS separately for EUR (4 PRSs) and AFR (3 PRSs)
 ### Among EUR
-png("../plots/correlation_PRS_EUR.png", units="in", width = 3, height = 2, res = 420)
+pdf("../plots/correlation_PRS_EUR.pdf", width = 3, height = 2)
 cor_vars_PRS_EUR <- dataset_main %>%
   filter(genetic_afr == 0) %>% 
   select(
@@ -58,24 +60,15 @@ cor_vars_PRS_EUR <- dataset_main %>%
     `PTSD PRS` = PTSD_fromEUR_PRS
   )
 plot_cor(cor_vars_PRS_EUR, pch.cex = 0.4, tl.cex = 0.4, cl.cex = 0.4, cl.ratio = 0.3)
+dev.off()
 
-### Among AFR - Will delete if not included in the Supplement Figure 1
-# png("../plots/correlation_PRS_AFR.png", units="in", width = 3, height = 2, res = 420)
-# cor_vars_PRS_AFR <- dataset_main %>%
-#   filter(genetic_afr == 1) %>% 
-#   select(
-#     `Diabetes PRS` = T2D_fromAFR_PRS,
-#     `Major Depressive Disorder PRS` = MVP_MDD_PRS,
-#     `PTSD PRS` = PTSD_fromAFR_PRS
-#   )
-# plot_cor(cor_vars_PRS_AFR, pch.cex = 0.4, tl.cex = 0.4, cl.cex = 0.4, cl.ratio = 0.4)
 ```
 
 # Table 1
 ```{r}
 # Among whole population
 # Check if whole cohort at 2y in table 1 or those in the models
-vars <- dataset_main %>% select(age_years, sex_br, matches("race|_hisp$")) %>% names()
+vars <- dataset_main %>% select(age_years, matches("race|_hisp$|sex")) %>% names()
 
 vars_factor <- dataset_main %>% select(sex_br, matches("race|_hisp$")) %>% names()
 
@@ -125,7 +118,7 @@ ggplot(dataset_main, aes(x = exposome_score_1y, y = allostatic_load)) +
   labs(x = "Exposomic Score",
        y = "Allostatic Load")
 
-ggsave(filename = "../plots/scatterplot_AL_exposome.png", width = 7, height = 4, dpi = 620)
+ggsave(filename = "../plots/scatterplot_AL_exposome.pdf", width = 7, height = 4)
 
 
 # Figure 3C
@@ -141,7 +134,7 @@ ggplot(dataset_main %>% filter(!is.na(sex_br)), #%>% rename("Sex" = sex_br),
        y = "Allostatic Load (Z score)") +
   theme(legend.position = c(0.15, 0.8))
 
-ggsave(filename = "../plots/scatterplot_AL_exposome_by_sex.png", width = 7, height = 5, dpi = 620)
+ggsave(filename = "../plots/scatterplot_AL_exposome_by_sex.pdf", width = 7, height = 5)
 
 ## Stratified by race
 ggplot(dataset_main %>% filter(!is.na(race)), #%>% rename("Race" = race), 
@@ -153,7 +146,7 @@ ggplot(dataset_main %>% filter(!is.na(race)), #%>% rename("Race" = race),
        y = "Allostatic Load (Z score)") +
   theme(legend.position = c(0.18, 0.75))
 
-ggsave(filename = "../plots/scatterplot_AL_exposome_by_race.png", width = 7, height = 5, dpi = 620)
+ggsave(filename = "../plots/scatterplot_AL_exposome_by_race.pdf", width = 7, height = 5)
 ```
 
 Statistics for interaction
@@ -208,14 +201,14 @@ ggbetweenstats(
         axis.title.y = element_text(size = 20),
         legend.text = element_text(size = 18))
 
-ggsave(filename = "../plots/AL_by_sex_boxplot.png", dpi = 620)
+ggsave(filename = "../plots/AL_by_sex_boxplot.pdf")
 
 
 
 dataset_main %>% group_by(race) %>% summarise(median = median(allostatic_load))
 
 kruskal.test(allostatic_load ~ race, dataset_main)
-res = FSA::dunnTest(allostatic_load ~ race,
+FSA::dunnTest(allostatic_load ~ race,
               data = dataset_main %>% 
                 mutate(allostatic_load = as.numeric(allostatic_load)),
               method = "holm")$res
@@ -246,7 +239,7 @@ ggbetweenstats(
         axis.text.y = element_text(size = 18, color = "black", face = "bold"),
         legend.text = element_text(size = 18))
 
-ggsave(filename = "../plots/AL_by_race_boxplot_space.png", dpi = 620)
+ggsave(filename = "../plots/AL_by_race_boxplot_space.pdf")
 ```
 
 # Figure 4 - Diabetes and MDD
@@ -278,7 +271,7 @@ mean(dataset_main$PTSD_fromEUR_PRS[dataset_main$genetic_afr == 0], na.rm = T) + 
 ```
 
 ```{r}
-dataset_main <- dataset_main %>% filter(genetic_afr == 0) %>% 
+dataset_main_eur <- dataset_main %>% filter(genetic_afr == 0) %>% 
   mutate(BMI_PRS_bins = cut(BMI_PRS, breaks = c(min(BMI_PRS, na.rm = T), -1.018603, 1.025242, max(BMI_PRS, na.rm = T))), #min, mean-1sd, mean+1sd, max
          BMI_PRS_bins = recode(BMI_PRS_bins, 
                                `(-3.46,-1.02]` = "Low genetic risk", 
@@ -311,7 +304,7 @@ dataset_main <- dataset_main %>% filter(genetic_afr == 0) %>%
 
 
 # Diabetes
-fit_diabetes <- lm(allostatic_load ~ exposome_score_1y*T2D_fromEUR_PRS_bins, data = dataset_main %>% filter(genetic_afr == 0))
+fit_diabetes <- lm(allostatic_load ~ exposome_score_1y*T2D_fromEUR_PRS_bins, data = dataset_main_eur %>% filter(genetic_afr == 0))
 summary(fit_diabetes)
 fit_diabetes_df <- ggpredict(fit_diabetes, terms = c("exposome_score_1y", "T2D_fromEUR_PRS_bins"))
 
@@ -334,11 +327,11 @@ plot(fit_diabetes_df) +
         legend.position = c(0.3, 0.85),
         plot.title = element_text(size = 22, hjust = 0.5)) +
   guides(color = guide_legend(nrow = 3))
-ggsave("../plots/interaction_exposome_T2D_fromEUR_PRS.png", dpi = 620)
+ggsave("../plots/interaction_exposome_T2D_fromEUR_PRS.pdf")
 
 
 # Major Depressive Disorder (MDD) # EUR
-fit_MDD <- lm(allostatic_load ~ exposome_score_1y*MDD_PRS_bins, data = dataset_main %>% filter(genetic_afr == 0))
+fit_MDD <- lm(allostatic_load ~ exposome_score_1y*MDD_PRS_bins, data = dataset_main_eur %>% filter(genetic_afr == 0))
 summary(fit_MDD)
 fit_MDD_df <- ggpredict(fit_MDD, terms = c("exposome_score_1y", "MDD_PRS_bins"))
 
@@ -361,7 +354,7 @@ plot(fit_MDD_df) +
         legend.position = c(0.3, 0.85),
         plot.title = element_text(size = 22, hjust = 0.5)) +
   guides(color = guide_legend(nrow = 3))
-ggsave("../plots/interaction_exposome_MDD_PRS.png", dpi = 620)
+ggsave("../plots/interaction_exposome_MDD_PRS.pdf", dpi = 620)
 ```
 
 
