@@ -120,7 +120,7 @@ anova(main_mod_4_t2d_eur, main_mod_3_t2d_eur_2, test="Chisq")
 anova(main_mod_5_t2d_eur, main_mod_4_t2d_eur, test="Chisq")
 anova(main_mod_5_t2d_eur, main_mod_3_t2d_eur_2, test="Chisq")
 ### adj p
-round(p.adjust(c(9.299e-10, 8.762e-08, 2.2e-16, 0.02076, 2.2e-16), method = "fdr"), 3) #0.000 0.000 0.000 0.000 0.021 0.000
+round(p.adjust(c(9.299e-10, 0, 8.762e-08, 2.2e-16, 0.02076, 2.2e-16), method = "fdr"), 3) #0.000 0.000 0.000 0.000 0.021 0.000
 
 
 ## BOTTOM
@@ -137,7 +137,7 @@ anova(main_mod_4_mdd_eur, main_mod_3_mdd_eur_2, test="Chisq")
 anova(main_mod_5_mdd_eur, main_mod_4_mdd_eur, test="Chisq")
 anova(main_mod_5_mdd_eur, main_mod_3_mdd_eur_2, test="Chisq")
 ### adj p
-round(p.adjust(c(0.003375, 0.05613, 2.2e-16, 0.04071, 2.2e-16), method = "fdr"), 3) # 0.005 0.000 0.053 0.000 0.053 0.000
+round(p.adjust(c(0.003375, 0, 0.05613, 2.2e-16, 0.04071, 2.2e-16), method = "fdr"), 3) # 0.005 0.000 0.053 0.000 0.053 0.000
 
 
 # Compare the models table 17
@@ -154,7 +154,7 @@ anova(main_mod_4_bmi_eur, main_mod_3_bmi_eur_2, test="Chisq")
 anova(main_mod_5_bmi_eur, main_mod_4_bmi_eur, test="Chisq")
 anova(main_mod_5_bmi_eur, main_mod_3_bmi_eur_2, test="Chisq")
 ### adj p
-round(p.adjust(c(2.2e-16, 2.2e-16, 2.2e-16, 0.003641, 2.2e-16), method = "fdr"), 3) #0.000 0.000 0.000 0.000 0.004 0.000
+round(p.adjust(c(2.2e-16, 0, 2.2e-16, 2.2e-16, 0.003641, 2.2e-16), method = "fdr"), 3) #0.000 0.000 0.000 0.000 0.004 0.000
 
 
 ## BOTTOM
@@ -169,7 +169,7 @@ anova(main_mod_4_ptsd_eur, main_mod_3_ptsd_eur_2, test="Chisq")
 anova(main_mod_5_ptsd_eur, main_mod_4_ptsd_eur, test="Chisq")
 anova(main_mod_5_ptsd_eur, main_mod_3_ptsd_eur_2, test="Chisq")
 ### adj p
-round(p.adjust(c(0.0001653, 0.0008835, 2.2e-16, 0.2894, 2.2e-16), method = "fdr"), 3) #0.000 0.000 0.001 0.000 0.295 0.000
+round(p.adjust(c(0.0001653, 0, 0.0008835, 2.2e-16, 0.2894, 2.2e-16), method = "fdr"), 3) #0.000 0.000 0.001 0.000 0.295 0.000
 ```
 
 ## Supplement table 7
